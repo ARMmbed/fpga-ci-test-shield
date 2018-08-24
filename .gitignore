@@ -1,0 +1,10 @@
+project_*
+sim/top
+sim/top.vcd
+*.sct
+*.scvd
+*.html
+*.bin
+mbed-code/DebugConfig/
+mbed-code/mbed-os/
+mbed-code/mbed_config.h

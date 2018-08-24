@@ -1,0 +1,7 @@
+{
+    "target_overrides": {
+        "*": {
+            "target.components_add": ["FPGA_CI_TEST_SHIELD"]
+        }
+    }
+}
