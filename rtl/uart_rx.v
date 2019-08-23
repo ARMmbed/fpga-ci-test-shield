@@ -70,6 +70,7 @@ module uart_rx(
     wire strobe_sample;
     wire strobe_transition;
 
+    reg rx_prev;
     reg [15:0] div_count;
     reg [3:0] bit_count_reg;
     reg [3:0] stop_count_reg;
@@ -84,7 +85,7 @@ module uart_rx(
     integer i;
 
     // Combinational logic
-    assign strobe_start = enable && (state == `STATE_IDLE) && (rx == 0);
+    assign strobe_start = enable && (state == `STATE_IDLE) && (rx_prev == 1'b1) && (rx == 1'b0);
     assign strobe_sample = (state != `STATE_IDLE) && (div_count == div[15:1]);
     assign strobe_transition = (state != `STATE_IDLE) && (div_count == 0);
     assign strobe_done = strobe_done_reg;
@@ -95,6 +96,8 @@ module uart_rx(
 
     // Sequential logic
     always @(posedge clk) begin
+        rx_prev <= rx;
+
         // strobe registers
         strobe_done_reg <= 0;
 
