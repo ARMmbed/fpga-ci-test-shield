@@ -527,10 +527,130 @@ module uart_rx_tb;
         end
     endtask
 
+    task start_testcase;
+        begin
+            reset(20);
+
+            @(negedge clk);
+            enable = 0;
+            div = 10;
+            parity_enable = 0;
+            parity_odd_n_even = 0;
+            bit_count = 8;
+            stop_count = 1;
+            rx_manual = 0;
+            rx_manual_n_auto = 1;
+            reset_history();
+
+            // enable while rx=0
+            #10;
+            rx_manual = 0;
+            #10;
+            enable = 1;
+            #10;
+            `util_assert_equal(0, strobe_start_history.events);
+            #10;
+            enable = 0;
+
+            // enable while rx=0, then rx=x
+            #10;
+            rx_manual = 0;
+            #10;
+            enable = 1;
+            #10;
+            rx_manual = 'hx;
+            #10;
+            `util_assert_equal(0, strobe_start_history.events);
+            #10;
+            enable = 0;
+
+            // enable while rx=0, then rx=1
+            #10;
+            rx_manual = 0;
+            #10;
+            enable = 1;
+            #10;
+            rx_manual = 1;
+            #10;
+            `util_assert_equal(0, strobe_start_history.events);
+            #10;
+            enable = 0;
+
+            // enable while rx=x
+            #10;
+            rx_manual = 'hx;
+            #10;
+            enable = 1;
+            #10;
+            `util_assert_equal(0, strobe_start_history.events);
+            #10;
+            enable = 0;
+
+            // enable while rx=x, then rx=0
+            #10;
+            rx_manual = 'hx;
+            #10;
+            enable = 1;
+            #10;
+            rx_manual = 0;
+            #10;
+            `util_assert_equal(0, strobe_start_history.events);
+            #10;
+            enable = 0;
+
+            // enable while rx=x, then rx=1
+            #10;
+            rx_manual = 'hx;
+            #10;
+            enable = 1;
+            #10;
+            rx_manual = 1;
+            #10;
+            `util_assert_equal(0, strobe_start_history.events);
+            #10;
+            enable = 0;
+
+            // enable while rx=1
+            #10;
+            rx_manual = 1;
+            #10;
+            enable = 1;
+            #10;
+            `util_assert_equal(0, strobe_start_history.events);
+            #10;
+            enable = 0;
+
+            // enable while rx=1, then rx=x
+            #10;
+            rx_manual = 1;
+            #10;
+            enable = 1;
+            #10;
+            rx_manual = 'hx;
+            #10;
+            `util_assert_equal(0, strobe_start_history.events);
+            #10;
+            enable = 0;
+
+            // enable while rx=1, then rx=0; FALLING EDGE -- start bit should be detected
+            #10;
+            rx_manual = 1;
+            #10;
+            enable = 1;
+            #10;
+            rx_manual = 0;
+            #10;
+            `util_assert_equal(1, strobe_start_history.events);
+            #10;
+            enable = 0;
+        end
+    endtask
+
     initial begin
         normal_operation_testcase();
         timing_testcase();
         errors_testcase();
+        start_testcase();
 
         -> terminate_sim;
     end
