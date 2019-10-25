@@ -53,7 +53,7 @@ module timer
     localparam MODE_TIMER              = 2'b00;  // Measure elapsed time
     localparam MODE_COUNT_DOWN_TIMER   = 2'b01;  // Perform delay
     
-    reg count_once_reg;
+    reg counting_enabled;
     reg enable_prev;
     wire negedge_enable;
     
@@ -67,18 +67,18 @@ module timer
             // Reset
             if (mode == MODE_TIMER) begin
                 counter <= 0;
-                count_once_reg <= 1;
+                counting_enabled <= 1;
             end else begin
                 counter <= count_down_value;
             end
         end else begin
             if (mode == MODE_TIMER) begin
-                if (enable == 1'b1 && count_once_reg == 1'b1) begin
+                if (enable == 1'b1 && counting_enabled == 1'b1) begin
                     counter <= counter + 1;
                 end
                 
                 if (count_once == 1'b1 && negedge_enable == 1'b1) begin
-                    count_once_reg <= 1'b0;
+                    counting_enabled <= 1'b0;
                 end
                 
             end else begin
