@@ -38,7 +38,7 @@ module mbed_tester_peripherals_apb2_slave #(
     localparam ADDR_BITS = 20;
     localparam ADDR_LOW_BITS = 12;
     localparam ADDR_HIGH_BITS = ADDR_BITS - ADDR_LOW_BITS;
-    localparam PERIPHERALS = 7;
+    localparam PERIPHERALS = 8;
 
     wire [PERIPHERALS * DATA_BITS - 1:0] PRDATAs;
     wire [PERIPHERALS - 1:0] PSELs;
@@ -83,6 +83,11 @@ module mbed_tester_peripherals_apb2_slave #(
     wire [IO_LOGICAL - 1:0] spi_slave_val;
     wire [IO_LOGICAL - 1:0] spi_slave_drive;
 
+    wire timer_psel;
+    wire [DATA_BITS - 1:0] timer_prdata;
+    wire [IO_LOGICAL - 1:0] timer_val;
+    wire [IO_LOGICAL - 1:0] timer_drive;
+
     genvar i_gen;
 
     assign paddr_low = PADDR[ADDR_LOW_BITS - 1:0];
@@ -95,6 +100,7 @@ module mbed_tester_peripherals_apb2_slave #(
     assign uart_psel = PSELs[4];        // 0x4000
     assign i2c_master_psel = PSELs[5];  // 0x5000
     assign spi_slave_psel = PSELs[6];   // 0x6000
+    assign timer_psel = PSELs[7];       // 0x7000
 
     assign PRDATAs[0 * DATA_BITS+:DATA_BITS] = config_prdata;
     assign PRDATAs[1 * DATA_BITS+:DATA_BITS] = gpio_prdata;
@@ -103,6 +109,7 @@ module mbed_tester_peripherals_apb2_slave #(
     assign PRDATAs[4 * DATA_BITS+:DATA_BITS] = uart_prdata;
     assign PRDATAs[5 * DATA_BITS+:DATA_BITS] = i2c_master_prdata;
     assign PRDATAs[6 * DATA_BITS+:DATA_BITS] = spi_slave_prdata;
+    assign PRDATAs[7 * DATA_BITS+:DATA_BITS] = timer_prdata;
 
     assign logical_val_peripherals[0] = 0;
     assign logical_val_peripherals[1] = gpio_val;
@@ -111,6 +118,7 @@ module mbed_tester_peripherals_apb2_slave #(
     assign logical_val_peripherals[4] = uart_val;
     assign logical_val_peripherals[5] = i2c_master_val;
     assign logical_val_peripherals[6] = spi_slave_val;
+    assign logical_val_peripherals[7] = timer_val;
 
     assign logical_drive_peripherals[0] = 0;
     assign logical_drive_peripherals[1] = gpio_drive;
@@ -119,6 +127,7 @@ module mbed_tester_peripherals_apb2_slave #(
     assign logical_drive_peripherals[4] = uart_drive;
     assign logical_drive_peripherals[5] = i2c_master_drive;
     assign logical_drive_peripherals[6] = spi_slave_drive;
+    assign logical_drive_peripherals[7] = timer_drive;
 
     slave_mux_apb2_slave #(.SELECTOR_BITS(ADDR_HIGH_BITS), .DATA_BITS(DATA_BITS), .SLAVES(PERIPHERALS)) slave_mux_apb2_slave(
         .select(paddr_high),
@@ -256,6 +265,21 @@ module mbed_tester_peripherals_apb2_slave #(
         PWRITE,
         PWDATA,
         spi_slave_prdata
+        );
+
+    // Timer - Offset 0x7000
+    timer_apb2_slave #(.IO_LOGICAL(IO_LOGICAL)) timer_apb2_slave (
+        clk,
+        rst,
+        logical_in,
+        timer_val,
+        timer_drive,
+        paddr_low,
+        timer_psel,
+        PENABLE,
+        PWRITE,
+        PWDATA,
+        timer_prdata
         );
 
 endmodule

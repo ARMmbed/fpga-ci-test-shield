@@ -107,14 +107,15 @@ create_project ${_xil_proj_name_} ./${_xil_proj_name_} -part xc7a35tcpg236-1
 set proj_dir [get_property directory [current_project]]
 
 # Reconstruct message rules
-set_msg_config  -ruleid {1}  -id {Synth 8-3331}  -string {{spi_slave_tester_apb2_slave}}  -suppress  -source 2
-set_msg_config  -ruleid {2}  -id {Synth 8-3331}  -string {{i2c_master_tester_apb2_slave}}  -suppress  -source 2
-set_msg_config  -ruleid {3}  -id {Synth 8-3331}  -string {{uart_tester_apb2_slave}}  -suppress  -source 2
-set_msg_config  -ruleid {4}  -id {Synth 8-3331}  -string {{io_metrics_apb2_slave}}  -suppress  -source 2
-set_msg_config  -ruleid {5}  -id {Synth 8-3331}  -string {{spi_master_tester_apb2_slave}}  -suppress  -source 2
-set_msg_config  -ruleid {6}  -id {Synth 8-3917}  -string {{io_metrics_apb2_slave}}  -suppress  -source 2
-set_msg_config  -ruleid {7}  -id {Synth 8-4446}  -string {{mbed_tester_basys3_top}}  -suppress  -source 2
-set_msg_config  -ruleid {8}  -id {Synth 8-4446}  -string {{reprogram_controller}}  -suppress  -source 2
+set_msg_config  -ruleid {1}  -id {Synth 9-3331}  -string {{spi_slave_tester_apb2_slave}}  -suppress  -source 2
+set_msg_config  -ruleid {2}  -id {Synth 9-3331}  -string {{i2c_master_tester_apb2_slave}}  -suppress  -source 2
+set_msg_config  -ruleid {3}  -id {Synth 9-3331}  -string {{uart_tester_apb2_slave}}  -suppress  -source 2
+set_msg_config  -ruleid {4}  -id {Synth 9-3331}  -string {{io_metrics_apb2_slave}}  -suppress  -source 2
+set_msg_config  -ruleid {5}  -id {Synth 9-3331}  -string {{spi_master_tester_apb2_slave}}  -suppress  -source 2
+set_msg_config  -ruleid {6}  -id {Synth 9-3331}  -string {{timer_apb2_slave}}  -suppress  -source 2
+set_msg_config  -ruleid {7}  -id {Synth 9-3917}  -string {{io_metrics_apb2_slave}}  -suppress  -source 2
+set_msg_config  -ruleid {8}  -id {Synth 9-4446}  -string {{mbed_tester_basys3_top}}  -suppress  -source 2
+set_msg_config  -ruleid {9}  -id {Synth 9-4446}  -string {{reprogram_controller}}  -suppress  -source 2
 
 
 # Set project properties
@@ -177,6 +178,8 @@ set files [list \
  [file normalize "${origin_dir}/rtl/uart_rx.v"] \
  [file normalize "${origin_dir}/rtl/uart_tester_apb2_slave.v"] \
  [file normalize "${origin_dir}/rtl/uart_tx.v"] \
+ [file normalize "${origin_dir}/rtl/timer.v"] \
+ [file normalize "${origin_dir}/rtl/timer_apb2_slave.v"] \
  [file normalize "${origin_dir}/rtl/mbed_tester_basys3_top.v"] \
 ]
 add_files -norecurse -fileset $obj $files
@@ -244,6 +247,8 @@ set files [list \
  [file normalize "${origin_dir}/sim/spi_cs_decoder_tb.v"] \
  [file normalize "${origin_dir}/sim/i2c_master_tester_apb2_slave_tb.v"] \
  [file normalize "${origin_dir}/sim/spi_master_tb.v"] \
+ [file normalize "${origin_dir}/sim/timer_tb.v"] \
+ [file normalize "${origin_dir}/sim/timer_apb2_slave_tb.v"] \
  [file normalize "${origin_dir}/sim/spi_slave_tester_apb2_slave_tb.v"] \
 ]
 add_files -norecurse -fileset $obj $files
