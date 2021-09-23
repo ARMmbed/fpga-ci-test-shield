@@ -1,0 +1,62 @@
+#
+# Copyright (c) 2021, Arm Limited and affiliates.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+on:
+  pull_request:
+  push:
+
+jobs: 
+
+  build-iverilog:
+    runs-on: ubuntu-latest
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+                    
+      -
+        name: prepare environment
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y verilog
+
+      -
+        name: build
+        run: |
+          cd sim
+          ./build_and_run_all.sh
+
+  build-vivado:
+    runs-on: ubuntu-latest
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: project
+
+      -
+        name: build
+        run: |
+          docker run --name vivado -dt mrcoulter45/vivado-ci /bin/bash
+          docker cp project vivado:/home/vivado/copy
+          docker exec -t vivado sh -c "mkdir -p /home/vivado/project"
+          docker exec -t vivado sh -c "cp -r /home/vivado/copy/* /home/vivado/project"
+          docker exec -t vivado sh -c "ls -al /home/vivado/project;"
+          docker exec -t vivado sh -c "chmod -R a+wrx /home/vivado/project"
+          docker exec -t vivado sh -c "export XILINX_VIVADO=/opt/Xilinx/Vivado/2018.3;export PATH='/opt/Xilinx/Vivado/2018.3/bin:$PATH';vivado -version;cd /home/vivado/project;vivado -mode batch -source generate_project_shield.tcl;vivado -mode batch -source synth-impl-bit.tcl /home/vivado/project/project_shield/project_shield.xpr;ls -l /home/vivado/project/project_shield/project_shield.runs/impl_1 > output.txt;chmod 777 detect-rtl-build-failure.sh;./detect-rtl-build-failure.sh"
